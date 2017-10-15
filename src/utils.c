@@ -4,15 +4,37 @@
 #include <string.h>
 
 void mysh_parse_command(const char* command,
-                        int *argc, char*** argv)
+                        int* n_commands,
+                        struct single_command** commands)
 {
-  const int kMaxArgc = 512;
-  *argv = (char**)malloc(kMaxArgc);
+  const int kMaxPipes = 512;
+  *commands = (struct single_command*)malloc(sizeof(struct single_command) * kMaxPipes);
 
   char buf[4096];
   strcpy(buf, command);
 
-  char *tok = strtok(buf, " \n\t");
+  char *saveptr = NULL;
+  char *tok = strtok_r(buf, "|", &saveptr);
+
+  int ti = 0;
+
+  while (tok != NULL) {
+  }
+
+  *n_commands = ti;
+}
+
+void parse_single_command(const char* command,
+                          int *argc, char*** argv)
+{
+  const int kMaxArgc = 512;
+  *argv = (char**)malloc(kMaxArgc * sizeof(char*));
+
+  char buf[4096];
+  strcpy(buf, command);
+
+  char *saveptr = NULL;
+  char *tok = strtok_r(buf, " \n\t", &saveptr);
 
   int ti = 0;
 
@@ -22,7 +44,7 @@ void mysh_parse_command(const char* command,
 
     ++ti;
 
-    tok = strtok(NULL, " \n\t");
+    tok = strtok_r(NULL, " \n\t", &saveptr);
   }
 
   *argc = ti;
