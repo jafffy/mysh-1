@@ -10,13 +10,25 @@ static void release_argv(int argc, char*** argv);
 int main()
 {
   char buf[8096];
-  int argc;
-  char** argv;
 
   while (1) {
     fgets(buf, 8096, stdin);
 
-    mysh_parse_command(buf, &argc, &argv);
+    struct single_command commands[512];
+    int n_commands = 0;
+    mysh_parse_command(buf, &n_commands, &commands);
+
+    for (int i = 0; i < n_commands; ++i) {
+      struct single_command* com = commands + i;
+      int argc = com->argc;
+      char** argv = com->argv;
+      for (int j = 0; j < argc; ++j) {
+        printf("%s ", argv[j]);
+      }
+      printf("\n");
+    }
+
+    /*
 
     if (strcmp(argv[0], "") == 0) {
       goto release_and_continue;
@@ -39,6 +51,7 @@ release_and_continue:
 release_and_exit:
     release_argv(argc, &argv);
     break;
+    */
   }
 
   return 0;

@@ -1,15 +1,13 @@
 #include "utils.h"
 
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <string.h>
 
 void mysh_parse_command(const char* command,
                         int* n_commands,
-                        struct single_command** commands)
+                        struct single_command (*commands)[])
 {
-  const int kMaxPipes = 512;
-  *commands = (struct single_command*)malloc(sizeof(struct single_command) * kMaxPipes);
-
   char buf[4096];
   strcpy(buf, command);
 
@@ -19,6 +17,12 @@ void mysh_parse_command(const char* command,
   int ti = 0;
 
   while (tok != NULL) {
+    struct single_command* com = *commands + ti;
+    parse_single_command(tok, &com->argc, &com->argv);
+
+    ++ti;
+
+    tok = strtok_r(buf, "|", &saveptr);
   }
 
   *n_commands = ti;
