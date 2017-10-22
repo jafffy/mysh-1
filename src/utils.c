@@ -22,7 +22,7 @@ void mysh_parse_command(const char* command,
 
     ++ti;
 
-    tok = strtok_r(buf, "|", &saveptr);
+    tok = strtok_r(NULL, "|", &saveptr);
   }
 
   *n_commands = ti;
