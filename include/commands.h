@@ -7,4 +7,8 @@ struct single_command
   char** argv;
 };
 
+int evaluate_command(int n_commands, struct single_command (*commands)[]);
+
+void free_commands(int n_commands, struct single_command (*commands)[]);
+
 #endif // MYSH_COMMANDS_H_

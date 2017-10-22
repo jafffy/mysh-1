@@ -61,7 +61,7 @@ int validate_pwd_argv(int argc, char** argv) {
 }
 
 int validate_fg_argv(int argc, char** argv) {
-  if (argv != 1) return 0;
+  if (argc != 1) return 0;
   if (strcmp(argv[0], "fg") != 0) return 0;
   
   return 1;
