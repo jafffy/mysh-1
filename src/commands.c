@@ -28,7 +28,7 @@ static int is_built_in_command(const char* command_name)
 /*
  * Description: Currently this function only handles single built_in commands. You should modify this structure to launch process and offer pipeline functionality.
  */
-int evaluate_command(int n_commands, struct single_command (*commands)[])
+int evaluate_command(int n_commands, struct single_command (*commands)[512])
 {
   if (n_commands > 0) {
     struct single_command* com = (*commands);
@@ -58,7 +58,7 @@ int evaluate_command(int n_commands, struct single_command (*commands)[])
   return 0;
 }
 
-void free_commands(int n_commands, struct single_command (*commands)[])
+void free_commands(int n_commands, struct single_command (*commands)[512])
 {
   for (int i = 0; i < n_commands; ++i) {
     struct single_command *com = (*commands) + i;

@@ -1,102 +1,102 @@
+#ifdef __cplusplus
 extern "C" {
+#endif
 #include "utils.h"
+#include "commands.h"
+#ifdef __cplusplus
 }
+#endif
 
 #include "gtest/gtest.h"
 
 #include <stdlib.h>
 
-static void free_string_array(char*** argv, int num_str);
-
 TEST(CommandParsingTest, BasicCommand) {
-  char** argv = NULL;
-  int argc = -1;
+  struct single_command commands[512];
+  int n_commands = 0;
 
-  mysh_parse_command("cd test", &argc, &argv);
+  mysh_parse_command("cd test", &n_commands, &commands);
 
-  ASSERT_EQ(argc, 2);
-  EXPECT_STREQ(argv[0], "cd");
-  EXPECT_STREQ(argv[1], "test");
+  ASSERT_EQ(n_commands, 1);
+  ASSERT_EQ(commands[0].argc, 2);
+  EXPECT_STREQ(commands[0].argv[0], "cd");
+  EXPECT_STREQ(commands[0].argv[1], "test");
 
-  free_string_array(&argv, argc);
+  free_commands(n_commands, &commands);
 }
 
 TEST(CommandParsingTest, SingleCommand) {
-  char** argv = NULL;
-  int argc = -1;
+  struct single_command commands[512];
+  int n_commands = 0;
 
-  mysh_parse_command("pwd", &argc, &argv);
+  mysh_parse_command("pwd", &n_commands, &commands);
 
-  ASSERT_EQ(argc, 1);
-  EXPECT_STREQ(argv[0], "pwd");
+  ASSERT_EQ(n_commands, 1);
+  ASSERT_EQ(commands[0].argc, 1);
+  EXPECT_STREQ(commands[0].argv[0], "pwd");
 
-  free_string_array(&argv, argc);
+  free_commands(n_commands, &commands);
 }
 
 TEST(CommandParsingTest, Redirection1) {
-  char** argv = NULL;
-  int argc = -1;
+  struct single_command commands[512];
+  int n_commands = 0;
 
-  mysh_parse_command("pwd > curdir.txt", &argc, &argv);
+  mysh_parse_command("pwd > curdir.txt", &n_commands, &commands);
 
-  ASSERT_EQ(argc, 3);
-  EXPECT_STREQ(argv[0], "pwd");
-  EXPECT_STREQ(argv[1], ">");
-  EXPECT_STREQ(argv[2], "curdir.txt");
+  ASSERT_EQ(n_commands, 1);
+  ASSERT_EQ(commands[0].argc, 3);
+  EXPECT_STREQ(commands[0].argv[0], "pwd");
+  EXPECT_STREQ(commands[0].argv[1], ">");
+  EXPECT_STREQ(commands[0].argv[2], "curdir.txt");
 
-  free_string_array(&argv, argc);
+  free_commands(n_commands, &commands);
 }
 
 TEST(CommandParsingTest, Redirection2) {
-  char** argv = NULL;
-  int argc = -1;
+  struct single_command commands[512];
+  int n_commands = 0;
 
-  mysh_parse_command("pwd > curdir.txt | less", &argc, &argv);
+  mysh_parse_command("pwd > curdir.txt | less", &n_commands, &commands);
 
-  ASSERT_EQ(argc, 5);
-  EXPECT_STREQ(argv[0], "pwd");
-  EXPECT_STREQ(argv[1], ">");
-  EXPECT_STREQ(argv[2], "curdir.txt");
-  EXPECT_STREQ(argv[3], "|");
-  EXPECT_STREQ(argv[4], "less");
+  ASSERT_EQ(n_commands, 2);
+  ASSERT_EQ(commands[0].argc, 3);
+  EXPECT_STREQ(commands[0].argv[0], "pwd");
+  EXPECT_STREQ(commands[0].argv[1], ">");
+  EXPECT_STREQ(commands[0].argv[2], "curdir.txt");
 
-  free_string_array(&argv, argc);
+  ASSERT_EQ(commands[1].argc, 1);
+  EXPECT_STREQ(commands[1].argv[0], "less");
+
+  free_commands(n_commands, &commands);
 }
 
 TEST(CommandParsingTest, SpaceBeforeString) {
-  char** argv = NULL;
-  int argc = -1;
+  struct single_command commands[512];
+  int n_commands = 0;
 
-  mysh_parse_command("    \n  \t pwd > curdir.txt | less", &argc, &argv);
+  mysh_parse_command("    \n  \t pwd > curdir.txt | less", &n_commands, &commands);
 
-  ASSERT_EQ(argc, 5);
-  EXPECT_STREQ(argv[0], "pwd");
-  EXPECT_STREQ(argv[1], ">");
-  EXPECT_STREQ(argv[2], "curdir.txt");
-  EXPECT_STREQ(argv[3], "|");
-  EXPECT_STREQ(argv[4], "less");
+  ASSERT_EQ(n_commands, 2);
+  ASSERT_EQ(commands[0].argc, 3);
+  EXPECT_STREQ(commands[0].argv[0], "pwd");
+  EXPECT_STREQ(commands[0].argv[1], ">");
+  EXPECT_STREQ(commands[0].argv[2], "curdir.txt");
 
-  free_string_array(&argv, argc);
+  ASSERT_EQ(commands[1].argc, 1);
+  EXPECT_STREQ(commands[1].argv[0], "less");
+
+  free_commands(n_commands, &commands);
 }
 
 TEST(CommandParsingTest, EmptyCommand) {
-  char** argv = NULL;
-  int argc = -1;
+  struct single_command commands[512];
+  int n_commands = 0;
 
-  mysh_parse_command("   \n \t    ", &argc, &argv);
+  mysh_parse_command("   \n \t    ", &n_commands, &commands);
 
-  ASSERT_EQ(argc, 1);
-  EXPECT_STREQ(argv[0], "");
+  ASSERT_EQ(commands[0].argc, 1);
+  EXPECT_STREQ(commands[0].argv[0], "");
 
-  free_string_array(&argv, argc);
-}
-
-static void free_string_array(char*** argv, int num_str) {
-  for (int i = 0; i < num_str; ++i) {
-    free((*argv)[i]);
-  }
-
-  free(*argv);
-
-  *argv = NULL;
+  free_commands(n_commands, &commands);
 }
