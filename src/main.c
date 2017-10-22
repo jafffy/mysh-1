@@ -3,9 +3,8 @@
 #include <string.h>
 
 #include "commands.h"
+#include "built_in.h"
 #include "utils.h"
-
-static void release_argv(int argc, char*** argv);
 
 int main()
 {
@@ -55,12 +54,4 @@ release_and_exit:
   }
 
   return 0;
-}
-
-static void release_argv(int argc, char*** argv) {
-  for (int i = 0; i < argc; ++i) {
-    free((*argv)[i]);
-  }
-  free(*argv);
-  *argv = NULL;
 }
