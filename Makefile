@@ -2,7 +2,7 @@
 CC=gcc -std=c99
 CFLAGS=-I./src -I./include
 LIB=-lpthread
-OBJ=./src/utils.o ./src/commands.o ./src/built_in.o ./src/signal.o
+OBJ=./src/utils.o ./src/commands.o ./src/built_in.o ./src/signal_handlers.o
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
